@@ -39,7 +39,7 @@ nome_do_script="sshmanagerapi"
 # Loop principal
 while true; do
     clear
-    echo -e "S-S-H--M-A-N-A-G-E-R"
+    echo -e "S-S-H--M-A-N-A-G-E-R  Versão: 0.0.1"
     echo -e "By @UlekBR"
 
     if verificar_processo "$nome_do_script"; then
@@ -65,6 +65,7 @@ while true; do
 
     echo -e "\nSelecione uma opção:"
     echo -e " 1 - $acao API"
+    echo -e " 2 - Desinstalar API"
     echo -e " 0 - Sair do menu"
 
     read -p "Digite a opção: " option
@@ -72,32 +73,58 @@ while true; do
     case $option in
         1)
             if verificar_processo "$nome_do_script"; then
-                pkill -9 "sshmanagerapi" >/dev/null 2>&1 &
-
-                crontab -l > /opt/SshManagerApi/cronfile
-                sed -i '/sshmanager/d' /opt/SshManagerApi/cronfile
-                crontab /opt/SshManagerApi/cronfile
-                rm /opt/SshManagerApi/cronfile
+                sudo systemctl stop sshmanager.service
+                sudo systemctl disable sshmanager.service
+                sudo rm /etc/systemd/system/sshmanager.service
+                sudo systemctl daemon-reload
 
                 rm -rf /opt/SshManagerApi/port.txt
                 rm -rf /opt/SshManagerApi/token.txt
             else
                 read -p $'\nDigite a porta que deseja usar: ' port
-                echo $port >> /opt/SshManagerApi/port.txt
+                echo "$port" >> /opt/SshManagerApi/port.txt
                 echo $(cat /proc/sys/kernel/random/uuid) >> /opt/SshManagerApi/token.txt
                 clear
                 echo -e "Porta escolhida: $(cat /opt/SshManagerApi/port.txt)"
 
-                crontab -l > /opt/SshManagerApi/cronfile
-                echo "@reboot sleep 30s && /opt/SshManagerApi/sshmanagerapi" >> /opt/SshManagerApi/cronfile
-                crontab /opt/SshManagerApi/cronfile
-                rm /opt/SshManagerApi/cronfile
-                /opt/SshManagerApi/sshmanagerapi >/dev/null 2>&1 &
+               SERVICE_FILE_CONTENT="[Unit]
+               Description=SshManagerApi
+               After=network.target
 
-                echo -e "O Link estará no Menu\n"
+               [Service]
+               Type=simple
+               ExecStart=/opt/SshManagerApi/sshmanagerapi
+               Restart=always
+
+               [Install]
+               WantedBy=multi-user.target"
+
+               SERVICE_FILE="/etc/systemd/system/sshmanager.service"
+               echo "$SERVICE_FILE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
+               sudo systemctl daemon-reload
+               sudo systemctl enable sshmanager.service
+               sudo systemctl start sshmanager.service
+               sudo systemctl status sshmanager.service
+
+               echo -e "Os dados estarão no menu\n"
             fi
             
             read -p "Pressione a tecla enter para voltar ao menu "
+            ;;
+        2)
+            if verificar_processo "$nome_do_script"; then
+                sudo systemctl stop sshmanager.service
+                sudo systemctl disable sshmanager.service
+                sudo rm /etc/systemd/system/sshmanager.service
+                sudo systemctl daemon-reload
+
+                rm -rf /opt/SshManagerApi/port.txt
+                rm -rf /opt/SshManagerApi/token.txt
+            fi
+
+            rm -rf /opt/SshManagerApi/
+            echo -e "Desinstalado\n"
+            exit 0
             ;;
         0)
             exit 0
