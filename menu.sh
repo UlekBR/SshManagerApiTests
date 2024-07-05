@@ -92,7 +92,8 @@ while true; do
                 echo -e "Porta escolhida: $(cat /opt/SshManagerApi/port.txt)"
 
 
-               SERVICE_FILE_CONTENT="[Unit]
+               SERVICE_FILE_CONTENT="
+               [Unit]
                Description=SshManagerApi
                After=network.target
 
@@ -100,9 +101,17 @@ while true; do
                Type=simple
                ExecStart=/opt/SshManagerApi/sshmanagerapi
                Restart=always
+               StandardOutput=syslog
+               StandardError=syslog
+               SyslogIdentifier=sshmanagerapi
+               User=root
+               Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+               Environment=HOME=/root
+               WorkingDirectory=/opt/SshManagerApi
 
                [Install]
-               WantedBy=multi-user.target"
+               WantedBy=multi-user.target
+               "
 
                SERVICE_FILE="/etc/systemd/system/sshmanager.service"
                echo "$SERVICE_FILE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
@@ -127,7 +136,7 @@ while true; do
             fi
 
             rm -rf /opt/SshManagerApi/
-            echo -e "Desinstalado\n"
+            echo -e "Desinstalado ;/"
             exit 0
             ;;
         0)
