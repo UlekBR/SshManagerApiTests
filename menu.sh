@@ -106,10 +106,9 @@ while true; do
 
                SERVICE_FILE="/etc/systemd/system/sshmanager.service"
                echo "$SERVICE_FILE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
-               sudo systemctl daemon-reload
-               sudo systemctl enable sshmanager.service
-               sudo systemctl start sshmanager.service
-               sudo systemctl status sshmanager.service
+               sudo systemctl daemon-reload > /dev/null
+               sudo systemctl enable sshmanager.service > /dev/null
+               sudo systemctl start sshmanager.service > /dev/null
 
                echo -e "Os dados estarão no menu\n"
             fi
