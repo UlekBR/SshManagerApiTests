@@ -50,6 +50,6 @@ fi
 
 
 # Cria um link simbólico para o script de menu
-ln -sf /opt/SshManagerApi/menu.sh /usr/local/bin/sshmanager
+ln -sf /opt/SshManagerApi/menu.sh /usr/local/bin/manager
 
-echo -e "Para iniciar o menu, digite: sshmanager"
+echo -e "Para iniciar o menu, digite: manager"
