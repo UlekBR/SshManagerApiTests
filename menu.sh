@@ -81,11 +81,16 @@ while true; do
                 rm -rf /opt/SshManagerApi/port.txt
                 rm -rf /opt/SshManagerApi/token.txt
             else
+
+                [ -f "/opt/SshManagerApi/port.txt" ] && rm -rf "/opt/SshManagerApi/port.txt"
+                [ -f "/opt/SshManagerApi/token.txt" ] && rm -rf "/opt/SshManagerApi/token.txt"
+
                 read -p $'\nDigite a porta que deseja usar: ' port
                 echo "$port" >> /opt/SshManagerApi/port.txt
                 echo $(cat /proc/sys/kernel/random/uuid) >> /opt/SshManagerApi/token.txt
                 clear
                 echo -e "Porta escolhida: $(cat /opt/SshManagerApi/port.txt)"
+
 
                SERVICE_FILE_CONTENT="[Unit]
                Description=SshManagerApi
